@@ -1231,6 +1231,7 @@ defineExpose({
 <template>
   <div class="chat-composer shrink-0 bg-transparent px-0 pb-3 pt-2" data-plugin-surface="chat-composer">
     <div ref="composerFrame" class="chat-composer__frame agent-thread">
+      <Transition name="bui-menu">
       <div
         v-if="slashMenuOpen"
         id="coding-slash-command-menu"
@@ -1266,6 +1267,7 @@ defineExpose({
           </span>
         </button>
       </div>
+      </Transition>
 
       <section
         v-if="queuedGuidance?.length"
@@ -1578,8 +1580,9 @@ defineExpose({
                   </span>
                   <ChevronDown class="chat-composer__chip__chevron size-3 shrink-0 opacity-60" />
                 </button>
+                <Transition name="bui-menu">
                 <div
-                  v-show="goalPanelOpen"
+                  v-if="goalPanelOpen"
                   class="chat-composer__goal-panel"
                   :aria-label="t('持续目标详情', 'Ongoing goal details')"
                 >
@@ -1648,6 +1651,7 @@ defineExpose({
                     </Button>
                   </div>
                 </div>
+                </Transition>
               </div>
               <button
                 v-if="executionMode === 'plan'"
@@ -1897,7 +1901,7 @@ defineExpose({
   font-size: var(--text-body);
   line-height: var(--text-body--line-height);
   color: var(--foreground);
-  transition: background-color 110ms ease, color 110ms ease;
+  transition: background-color var(--bui-dur-hover) ease, color var(--bui-dur-hover) ease;
 }
 
 .chat-composer__chip:hover:not(:disabled),

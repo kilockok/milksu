@@ -5,13 +5,26 @@
 
 :root {
   --bui-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --bui-ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
+  --bui-ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
   --bui-radius: 8px;
+  --bui-dur-leave: 40ms;
+  --bui-dur-edge: 70ms;
+  --bui-dur-menu: 75ms;
+  --bui-dur-fade: 100ms;
+  --bui-dur-hover: 150ms;
+  --bui-dur-reveal: 180ms;
+  --bui-dur-height: 220ms;
+  --bui-dur-layout: 250ms;
+  --bui-dur-page: 280ms;
+  --bui-dur-capsule: 300ms;
+  --bui-dur-turn: 400ms;
 }
 
 .tactical-page,
 .profile-page,
 .settings-page {
-  animation: bui-page-in 280ms var(--bui-ease);
+  animation: bui-page-in var(--bui-dur-page) var(--bui-ease);
 }
 
 @keyframes bui-page-in {
@@ -77,6 +90,7 @@
   font-size: 14px;
   font-weight: 500;
   letter-spacing: 0;
+  transition: background-color var(--bui-dur-hover) ease;
 }
 
 .settings-nav-item:hover {
@@ -182,4 +196,55 @@
 .tab-count {
   background: var(--hover-2);
   color: var(--muted-foreground);
+}
+
+/* Vue Transition classes — shell/overlay surfaces. First paint never
+ * animates (no appear); reduced-motion makes every surface instant. */
+
+.bui-menu-enter-active {
+  transition: opacity var(--bui-dur-menu) ease-out;
+}
+
+.bui-menu-leave-active {
+  transition: opacity var(--bui-dur-leave) ease-in;
+}
+
+.bui-menu-enter-from,
+.bui-menu-leave-to {
+  opacity: 0;
+}
+
+.bui-dock-pop-enter-active {
+  transition:
+    opacity var(--bui-dur-hover) var(--bui-ease),
+    scale var(--bui-dur-hover) var(--bui-ease),
+    translate var(--bui-dur-hover) var(--bui-ease);
+}
+
+.bui-dock-pop-leave-active {
+  transition: opacity var(--bui-dur-fade) ease-in;
+}
+
+.bui-dock-pop-enter-from {
+  opacity: 0;
+  scale: 0.98;
+  translate: 0 8px;
+}
+
+.bui-dock-pop-leave-to {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bui-menu-enter-active,
+  .bui-menu-leave-active,
+  .bui-dock-pop-enter-active,
+  .bui-dock-pop-leave-active {
+    transition: none;
+  }
+
+  .bui-dock-pop-enter-from {
+    scale: none;
+    translate: none;
+  }
 }

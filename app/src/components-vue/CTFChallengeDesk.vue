@@ -272,5 +272,5 @@ function select(id: number) {
   --ak-tag-signal: var(--muted-foreground);
 }
 
-.challenge-row { position: relative; cursor: default; transition: background-color 140ms ease; }
+.challenge-row { position: relative; cursor: default; transition: background-color var(--bui-dur-hover) ease; }
 </style>

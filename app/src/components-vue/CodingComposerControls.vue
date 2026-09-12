@@ -313,8 +313,8 @@ function triggerModelText() {
   font-size: var(--text-body, 0.75rem);
   line-height: var(--text-body--line-height, 1rem);
   transition:
-    background-color 110ms ease,
-    color 110ms ease;
+    background-color var(--bui-dur-hover) ease,
+    color var(--bui-dur-hover) ease;
 }
 
 .composer-control[data-slot='select-trigger'] {
@@ -332,7 +332,7 @@ function triggerModelText() {
 .composer-control[data-button][data-variant='ghost']::before {
   border-radius: inherit;
   transition:
-    background-color 110ms ease,
+    background-color var(--bui-dur-hover) ease,
     scale 0.255s linear(0, 0.3505, 0.7432, 0.9336, 0.9951, 1.0062, 1.0045, 1.0019, 1.0005, 1);
 }
 

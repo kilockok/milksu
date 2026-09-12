@@ -2619,7 +2619,7 @@ async function saveProviderEditor(closeAfterSave: boolean) {
   background: var(--hover-2);
   box-shadow: none;
 }
-.model-service-row { transition: background-color 120ms ease, border-color 120ms ease; }
+.model-service-row { transition: background-color var(--bui-dur-hover) ease, border-color var(--bui-dur-hover) ease; }
 .model-service-row:hover { background: var(--overlay-hover-light); }
 .model-service-row-primary { box-shadow: none; background: var(--hover-2); }
 .model-service-icon { box-shadow: inset 0 0 18px color-mix(in srgb, var(--brand) 5%, transparent); }

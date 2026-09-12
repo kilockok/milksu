@@ -57,6 +57,13 @@ function conversation(goal?: CodingGoalState): Conversation {
   }
 }
 
+// Vue Transition keeps a leaving element in the DOM for a few rAF frames;
+// wait them out before asserting removal.
+async function settleLeaveTransitions() {
+  await nextTick()
+  await new Promise(resolve => window.setTimeout(resolve, 100))
+}
+
 function mountPage(options: {
   goal?: CodingGoalState
   running?: boolean
@@ -145,7 +152,9 @@ describe('ChatPage Goal interaction', () => {
 
     expect(textarea.getAttribute('data-placeholder')).toContain('写下一个可持续目标')
     expect(document.activeElement).toBe(textarea)
-    expect(result.host.querySelector('[aria-label="持续目标"]')?.textContent)
+    const goalDock = result.host.querySelector('[aria-label="持续目标"]')
+    expect(goalDock?.textContent).toContain('目标')
+    expect(goalDock?.querySelector('.chat-composer__chip--goal')?.getAttribute('title'))
       .toContain('下一条消息会成为持续目标')
   })
 
@@ -212,6 +221,8 @@ describe('ChatPage Goal interaction', () => {
   it('uses interruption to pause a running Goal and Pi commands when it is idle', async () => {
     const running = mountPage({ goal: activeGoal, running: true })
     await nextTick()
+    running.host.querySelector<HTMLButtonElement>('.chat-composer__chip--goal')?.click()
+    await nextTick()
     running.host.querySelector<HTMLButtonElement>('[aria-label="暂停目标"]')?.click()
     expect(running.aborts()).toBe(1)
     expect(running.controlledGoals).toEqual([])
@@ -220,6 +231,8 @@ describe('ChatPage Goal interaction', () => {
       goal: { ...activeGoal, status: 'paused' },
       running: false,
     })
+    await nextTick()
+    paused.host.querySelector<HTMLButtonElement>('.chat-composer__chip--goal')?.click()
     await nextTick()
     paused.host.querySelector<HTMLButtonElement>('[aria-label="继续目标"]')?.click()
     paused.host.querySelector<HTMLButtonElement>('[aria-label="清除当前目标"]')?.click()
@@ -400,12 +413,12 @@ describe('ChatPage Goal interaction', () => {
     expect(result.host.querySelectorAll('[aria-label="关闭右侧栏"]')).toHaveLength(1)
 
     result.host.querySelector<HTMLButtonElement>('[aria-label="关闭右侧栏"]')?.click()
-    await nextTick()
+    await settleLeaveTransitions()
     expect(result.host.querySelector('[data-testid="single-right-context-rail"]')).toBeNull()
     expect(result.host.querySelector('[aria-label="底部终端面板"]')).not.toBeNull()
 
     result.host.querySelector<HTMLButtonElement>('[aria-label="关闭底部终端"]')?.click()
-    await nextTick()
+    await settleLeaveTransitions()
     expect(result.host.querySelector('[aria-label="底部终端面板"]')).toBeNull()
   })
 })

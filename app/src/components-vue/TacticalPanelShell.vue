@@ -97,7 +97,6 @@ function startResize(event: PointerEvent) {
   border-left: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
   background: var(--background-chrome);
   color: var(--foreground);
-  animation: agent-chrome-in-x 280ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .tactical-panel-shell[data-panel-size='compact'],
@@ -156,22 +155,5 @@ function startResize(event: PointerEvent) {
 
 .tactical-panel-shell__footer {
   flex: none;
-}
-
-@keyframes agent-chrome-in-x {
-  from {
-    opacity: 0;
-    transform: translateX(8px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .tactical-panel-shell {
-    animation: none;
-  }
 }
 </style>

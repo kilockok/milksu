@@ -763,6 +763,7 @@ function abortRename(event: KeyboardEvent) {
         </div>
       </div>
     </template>
+    <Transition name="bui-dock-pop">
     <ConversationDock
       v-if="!chatMaximized && chatDockOpen"
       :conversation="conversation ?? null"
@@ -815,6 +816,7 @@ function abortRename(event: KeyboardEvent) {
       @edit-queued-guidance="$emit('editQueuedGuidance', $event)"
       @open-settings="$emit('openSettings')"
     />
+    </Transition>
 
     <WorkspaceImportDialog
       v-model:open="showNew"

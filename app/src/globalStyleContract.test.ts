@@ -96,6 +96,45 @@ describe('global style contract', () => {
     expect(chromeCss).toContain('display: none')
   })
 
+  it('pins the shared motion token layer in beautiful-chrome', () => {
+    const chromeCss = readFileSync(
+      fileURLToPath(new URL('./styles/beautiful-chrome.css', import.meta.url)),
+      'utf8',
+    )
+    expect(chromeCss).toContain('--bui-ease: cubic-bezier(0.16, 1, 0.3, 1)')
+    expect(chromeCss).toContain('--bui-ease-spring: cubic-bezier(0.32, 0.72, 0, 1)')
+    expect(chromeCss).toContain('--bui-ease-standard: cubic-bezier(0.4, 0, 0.2, 1)')
+    for (const token of [
+      '--bui-dur-leave: 40ms',
+      '--bui-dur-edge: 70ms',
+      '--bui-dur-menu: 75ms',
+      '--bui-dur-fade: 100ms',
+      '--bui-dur-hover: 150ms',
+      '--bui-dur-reveal: 180ms',
+      '--bui-dur-height: 220ms',
+      '--bui-dur-layout: 250ms',
+      '--bui-dur-page: 280ms',
+      '--bui-dur-capsule: 300ms',
+      '--bui-dur-turn: 400ms',
+    ]) {
+      expect(chromeCss).toContain(token)
+    }
+    expect(chromeCss).toContain('.bui-menu-enter-active')
+    expect(chromeCss).toContain('.bui-dock-pop-enter-active')
+    expect(chromeCss).toContain('prefers-reduced-motion')
+  })
+
+  it('keeps retired ak motion tokens out of the easter-egg sheet', () => {
+    expect(akUiCss).not.toContain('--ak-motion-')
+    expect(akUiCss).not.toContain('--ak-ease-standard')
+    expect(akUiCss).not.toContain('--ak-ease-emphasized')
+    expect(akUiCss).toContain('.ak-progress__fill')
+    expect(akUiCss).toContain('.ak-loading')
+    const rmBlock = akUiCss.slice(akUiCss.indexOf('@media (prefers-reduced-motion: reduce)'))
+    expect(rmBlock).toContain('.ak-progress__fill')
+    expect(rmBlock).toContain('.ak-loading')
+  })
+
   it('keeps list-page Import on the shared execution blue fill', () => {
     expect(indexCss).toContain('[data-workspace-catalog-actions] .workspace-catalog-action[data-variant=\'default\']')
     expect(indexCss).toContain('background-color: var(--accent-blue-fill)')
@@ -133,7 +172,15 @@ describe('global style contract', () => {
     expect(agentCss).toContain('agent-caret-blink')
     expect(agentCss).toContain('.agent-chrome-icon')
     expect(agentCss).toContain('.coding-terminal-dock')
-    expect(agentCss).toContain('agent-chrome-in-y')
+    expect(agentCss).toContain('.bui-rail-enter-active')
+    expect(agentCss).toContain('.bui-dock-enter-active')
+    expect(agentCss).toContain('.bui-reveal-enter-active')
+    expect(agentCss).toContain('bui-turn-in')
+    expect(agentCss).toContain('data-fresh-turn')
+    expect(agentCss).toContain('var(--bui-ease-spring)')
+    expect(agentCss).toContain('var(--bui-dur-hover)')
+    expect(agentCss).not.toContain('cubic-bezier(')
+    expect(agentCss).not.toContain('agent-chrome-in-y')
     expect(agentCss).toContain('.agent-task-rows')
     expect(agentCss).toContain('.agent-composer-aux')
     expect(agentCss).toContain('.agent-change-rows')

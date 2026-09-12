@@ -795,6 +795,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', closeOnOutside
     </div>
 
     <Teleport to="body">
+      <Transition name="bui-menu">
       <section
         v-if="workspaceOpen && !collapsed"
         data-workspace-menu
@@ -831,6 +832,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', closeOnOutside
           <LogOut class="size-4" />{{ t('账户未配置', 'Account not configured') }}
         </button>
       </section>
+      </Transition>
     </Teleport>
 
     <Dialog :open="Boolean(pendingAction)" @update:open="open => { if (!open) closeConversationAction() }">
@@ -869,7 +871,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', closeOnOutside
 .agent-sidebar {
   background: var(--sidebar);
   color: var(--foreground);
-  transition: width 280ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: width var(--bui-dur-layout) var(--bui-ease-spring);
 }
 
 .agent-sidebar.is-resizing {
@@ -941,6 +943,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', closeOnOutside
   color: inherit;
   cursor: pointer;
   opacity: 0;
+  transition: opacity var(--bui-dur-hover) ease;
 }
 
 .agent-sidebar-item:hover .agent-sidebar-item__menu,
@@ -989,6 +992,14 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', closeOnOutside
   align-items: center;
   justify-content: center;
   transform: translateY(-50%);
+}
+
+.agent-sidebar__copy,
+.agent-sidebar__workspace,
+.agent-sidebar__icon,
+.agent-sidebar__chats,
+.agent-sidebar__expand {
+  transition: opacity var(--bui-dur-fade) ease;
 }
 
 .agent-sidebar[data-sidebar-collapsed='true'] .agent-sidebar__copy,
@@ -1097,5 +1108,17 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', closeOnOutside
 .user-menu-item:disabled {
   cursor: default;
   opacity: 0.55;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .agent-sidebar,
+  .agent-sidebar__copy,
+  .agent-sidebar__workspace,
+  .agent-sidebar__icon,
+  .agent-sidebar__chats,
+  .agent-sidebar__expand,
+  .agent-sidebar-item__menu {
+    transition: none;
+  }
 }
 </style>

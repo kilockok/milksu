@@ -865,6 +865,7 @@ function addSearchResult(candidate: VulnerabilitySearchCandidate) {
       </DialogContent>
     </Dialog>
   </main>
+  <Transition name="bui-dock-pop">
   <ConversationDock
     v-if="!chatMaximized && chatDockOpen"
     ref="conversationDock"
@@ -918,10 +919,11 @@ function addSearchResult(candidate: VulnerabilitySearchCandidate) {
     @edit-queued-guidance="$emit('editQueuedGuidance', $event)"
     @open-settings="$emit('openSettings')"
   />
+  </Transition>
 </template>
 
 <style scoped>
-.vuln-row { position: relative; cursor: default; transition: background-color 140ms ease; }
+.vuln-row { position: relative; cursor: default; transition: background-color var(--bui-dur-hover) ease; }
 .vuln-row-selected { background: var(--hover-2); }
 .tactical-table-head { font-family: 'SFMono-Regular', monospace; letter-spacing: .08em; text-transform: uppercase; }
 .cve-search-dialog { max-height: min(760px, calc(100vh - 3rem)); overflow: hidden; }

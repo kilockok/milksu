@@ -762,7 +762,7 @@ body {
 @media (prefers-reduced-motion: no-preference) {
   .game-focus-panel,
   [data-ui-selected] {
-    transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+    transition: background-color var(--bui-dur-hover) ease, border-color var(--bui-dur-hover) ease, box-shadow var(--bui-dur-hover) ease;
   }
 }
 
@@ -1025,7 +1025,7 @@ pre,
 
 .tactical-row {
   border-bottom: 1px solid color-mix(in srgb, var(--border-hairline) 78%, transparent);
-  transition: background-color 120ms ease, border-color 120ms ease, transform 120ms ease;
+  transition: background-color var(--bui-dur-hover) ease, border-color var(--bui-dur-hover) ease, transform var(--bui-dur-hover) ease;
 }
 
 .tactical-row:hover { background: var(--hover-2); }

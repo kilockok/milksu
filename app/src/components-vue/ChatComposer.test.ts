@@ -42,6 +42,13 @@ function setComposerText(editor: HTMLElement, text: string) {
   editor.dispatchEvent(new Event('input', { bubbles: true }))
 }
 
+// Vue Transition keeps a leaving element in the DOM for a few rAF frames;
+// wait them out before asserting removal.
+async function settleLeaveTransitions() {
+  await nextTick()
+  await new Promise(resolve => window.setTimeout(resolve, 100))
+}
+
 function mountComposer(overrides: Record<string, unknown> = {}) {
   const host = document.createElement('div')
   document.body.append(host)
@@ -906,6 +913,7 @@ describe('ChatComposer', () => {
       cancelable: true,
     }))
     await nextTick()
+    await settleLeaveTransitions()
     expect(dismissed.host.querySelector('[role="listbox"]')).toBeNull()
     expect(textarea.textContent).toBe('/')
 
@@ -938,30 +946,30 @@ describe('ChatComposer', () => {
     await nextTick()
 
     const chip = result.host.querySelector<HTMLButtonElement>('.chat-composer__chip--goal')
-    const panel = result.host.querySelector<HTMLElement>('.chat-composer__goal-panel')
+    const goalPanel = () => result.host.querySelector<HTMLElement>('.chat-composer__goal-panel')
     expect(chip).not.toBeNull()
-    expect(panel?.style.display).toBe('none')
+    expect(goalPanel()).toBeNull()
 
     chip?.focus()
     chip?.click()
     await nextTick()
-    expect(panel?.style.display).not.toBe('none')
+    expect(goalPanel()).not.toBeNull()
 
     document.dispatchEvent(new KeyboardEvent('keydown', {
       key: 'Escape',
       bubbles: true,
       cancelable: true,
     }))
-    await nextTick()
-    expect(panel?.style.display).toBe('none')
+    await settleLeaveTransitions()
+    expect(goalPanel()).toBeNull()
 
     chip?.click()
     await nextTick()
-    expect(panel?.style.display).not.toBe('none')
+    expect(goalPanel()).not.toBeNull()
 
     document.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))
-    await nextTick()
-    expect(panel?.style.display).toBe('none')
+    await settleLeaveTransitions()
+    expect(goalPanel()).toBeNull()
   })
 
   it('collapses the goal chip to an icon and lets the progress pill shrink in narrow containers', () => {
@@ -984,6 +992,8 @@ describe('ChatComposer', () => {
       goal: activeGoal,
     })
     await nextTick()
+    active.host.querySelector<HTMLButtonElement>('.chat-composer__chip--goal')?.click()
+    await nextTick()
 
     const progress = active.host.querySelector('[aria-label="任务进度摘要"]')
     const goalPanel = active.host.querySelector('[aria-label="持续目标"]')
@@ -1001,6 +1011,8 @@ describe('ChatComposer', () => {
     const paused = mountComposer({
       goal: { ...activeGoal, status: 'paused' },
     })
+    await nextTick()
+    paused.host.querySelector<HTMLButtonElement>('.chat-composer__chip--goal')?.click()
     await nextTick()
     paused.host.querySelector<HTMLButtonElement>('[aria-label="继续目标"]')?.click()
     expect(paused.controlledGoals).toEqual(['resume'])

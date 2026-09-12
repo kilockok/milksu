@@ -1997,6 +1997,7 @@ onBeforeUnmount(() => {
         </section>
       </div>
     </div>
+    <Transition name="bui-dock-pop">
     <ConversationDock
       v-if="!chatMaximized && chatDockOpen"
       ref="conversationDock"
@@ -2051,6 +2052,7 @@ onBeforeUnmount(() => {
       @edit-queued-guidance="$emit('editQueuedGuidance', $event)"
       @open-settings="$emit('openSettings')"
     />
+    </Transition>
     <WorkspaceImportDialog
       :open="showImport"
       :description="t('同步 NSSCTF 或 CTFshow 题库，或导入自定义题目。', 'Sync the NSSCTF or CTFshow catalog, or import a custom challenge.')"

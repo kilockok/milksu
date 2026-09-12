@@ -54,11 +54,6 @@
   --ak-shadow-panel: 0 1rem 2rem rgba(0, 0, 0, 0.32);
   --ak-shadow-signal: 0 0 1rem color-mix(in srgb, var(--ak-signal-info) 62%, transparent);
   --ak-depth-perspective: 30em;
-  --ak-motion-fast: 120ms;
-  --ak-motion-base: 200ms;
-  --ak-motion-slow: 420ms;
-  --ak-ease-standard: cubic-bezier(0.2, 0, 0, 1);
-  --ak-ease-emphasized: cubic-bezier(0.2, 0.8, 0.2, 1);
   --ak-focus-color: var(--ak-signal-action);
   --ak-focus-width: 3px;
   --ak-focus-offset: 3px;
@@ -345,8 +340,14 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ak-status__signal {
+  .ak-status__signal,
+  .ak-loading,
+  .ak-loading::after {
     animation: none;
+  }
+
+  .ak-progress__fill {
+    transition: none;
   }
 }
 

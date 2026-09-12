@@ -760,6 +760,28 @@ watch(chatTranscript, blocks => {
   const pruned = pruneChatActivityExpansion(current, blocks)
   if (pruned !== current) applyActivityExpansion(pruned)
 })
+
+// Fresh-turn entrance: turns restored with a conversation paint instantly;
+// only ids appended while this page already shows the conversation animate.
+const knownTurnIds = new Set<string>()
+const freshTurnIds = new Set<string>()
+let freshSeededConversationId: string | null = null
+
+watch(chatTranscript, blocks => {
+  const conversationId = props.conversation?.id ?? null
+  if (conversationId !== freshSeededConversationId) {
+    freshSeededConversationId = conversationId
+    freshTurnIds.clear()
+    for (const block of blocks) knownTurnIds.add(block.id)
+    return
+  }
+  for (const block of blocks) {
+    if (block.kind === 'message' && !knownTurnIds.has(block.id)) {
+      knownTurnIds.add(block.id)
+      freshTurnIds.add(block.id)
+    }
+  }
+})
 const waitingForModel = computed(() => {
   if (!props.running) return false
   const last = chatTranscript.value.at(-1)
@@ -2191,6 +2213,7 @@ defineExpose({
           />
           <ChatMessageItem
             v-else
+            :data-fresh-turn="freshTurnIds.has(item.id) ? '' : undefined"
             :message="item.message"
             :recoverable="item.message.id === recoverableFailureId"
             :recovery-context="ctfSession ? 'ctf' : 'coding'"
@@ -2234,27 +2257,31 @@ defineExpose({
     </p>
 
 
+    <Transition name="bui-reveal">
     <div
       v-if="hasComposerDock"
       class="agent-composer-aux agent-thread"
     >
-      <div class="agent-status-capsule">
-        <AgentExecutionPlan
-          :messages="conversation?.messages ?? []"
-          :running="running"
-        />
-        <span
-          v-if="hasExecutionPlan && composerGitSummary"
-          class="agent-status-sep"
-          aria-hidden="true"
-        >·</span>
-        <AgentChangeSummary
-          :summary="composerGitSummary"
-          :previews="conversationFileDiffs"
-          @open-changes="openChanges"
-        />
+      <div class="agent-composer-aux__inner">
+        <div class="agent-status-capsule">
+          <AgentExecutionPlan
+            :messages="conversation?.messages ?? []"
+            :running="running"
+          />
+          <span
+            v-if="hasExecutionPlan && composerGitSummary"
+            class="agent-status-sep"
+            aria-hidden="true"
+          >·</span>
+          <AgentChangeSummary
+            :summary="composerGitSummary"
+            :previews="conversationFileDiffs"
+            @open-changes="openChanges"
+          />
+        </div>
       </div>
     </div>
+    </Transition>
     <ChatComposer
       ref="composer"
       :running="running"
@@ -2313,6 +2340,7 @@ defineExpose({
       @change-mcp-servers="(servers, digest) => $emit('changeMcpServers', servers, digest)"
     />
   </main>
+  <Transition name="bui-rail">
   <TacticalPanelShell
     v-if="!dockSurface && environmentOpen"
     as="aside"
@@ -2984,7 +3012,9 @@ defineExpose({
       </template>
     </div>
   </TacticalPanelShell>
+  </Transition>
   </div>
+  <Transition name="bui-dock">
   <div
     v-if="!dockSurface && terminalOpen"
     class="coding-terminal-dock min-w-0 shrink-0 overflow-hidden"
@@ -3006,6 +3036,7 @@ defineExpose({
       @close="terminalOpen = false"
     />
   </div>
+  </Transition>
   <CodingComputerUsePermissionDialog
     v-model:open="computerUsePermissionDialogOpen"
     :status="computerUseStatus"

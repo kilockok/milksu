@@ -558,7 +558,7 @@ onBeforeUnmount(() => stopUsageEvents?.())
   background: var(--background);
 }
 .profile-tabs { display: flex; gap: 1px; padding: 0.25rem; }
-.profile-tab { position: relative; min-height: 2rem; border: 0; border-radius: 8px; background: transparent; padding: 0 0.75rem; color: var(--muted-foreground); font-size: 14px; font-weight: 500; cursor: pointer; transition: color 150ms ease, background 150ms ease; }
+.profile-tab { position: relative; min-height: 2rem; border: 0; border-radius: 8px; background: transparent; padding: 0 0.75rem; color: var(--muted-foreground); font-size: 14px; font-weight: 500; cursor: pointer; transition: color var(--bui-dur-hover) ease, background var(--bui-dur-hover) ease; }
 .profile-tab:hover { background: var(--hover-2); color: var(--foreground); }
 .profile-tab.active { background: var(--hover-2); color: var(--foreground); }
 .profile-tab.active::after { content: none; }

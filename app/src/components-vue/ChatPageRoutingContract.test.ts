@@ -81,6 +81,7 @@ describe('ChatPage routing contract', () => {
 
   it('keeps the module topbar when the right rail is open and parks terminal plus close there', () => {
     expect(chatPageSource).toContain('v-if="!dockSurface"')
+    expect(chatPageSource).toContain('<Transition name="bui-rail">')
     expect(chatPageSource).toContain('<template v-if="!environmentOpen">')
     expect(chatPageSource).toContain('data-testid="coding-rail-terminal"')
     expect(chatPageSource).toContain('data-testid="coding-rail-toggle"')
