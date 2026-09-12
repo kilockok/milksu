@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 @import "@felinic/ui/style.css";
 @import "./styles/ak-ui.css";
 @import "./styles/ak-ui-flourish.css";

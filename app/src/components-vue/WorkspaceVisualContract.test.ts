@@ -22,6 +22,7 @@ import workspaceRailSource from './WorkspaceRail.vue?raw'
 import workspaceTopBarSource from './WorkspaceTopBar.vue?raw'
 import ctfArtifactsSource from './CTFArtifacts.vue?raw'
 import ctfPageSource from './CTFPage.vue?raw'
+import codingComposerControlsSource from './CodingComposerControls.vue?raw'
 import catalogActionsSource from './WorkspaceCatalogActions.vue?raw'
 import connectionLiveSource from './ConnectionLiveStatus.vue?raw'
 import ctfWorkspaceHeaderSource from './CTFWorkspaceHeader.vue?raw'
@@ -177,6 +178,30 @@ describe('Workspace visual contract', () => {
     expect(profilePageSource).toContain('var(--bui-dur-hover)')
     expect(ctfChallengeDeskSource).toContain('var(--bui-dur-hover)')
     expect(vulnPageSource).toContain('var(--bui-dur-hover)')
+  })
+
+  it('keeps page switches opaque, gates them off first paint, and boots felinic overlay motion', () => {
+    const chromeCss = readFileSync(new URL('../styles/beautiful-chrome.css', import.meta.url), 'utf8')
+    // The old page unmounts instantly, so the entering page must not fade from
+    // transparent — an opacity dip over the bare backdrop reads as flicker.
+    expect(chromeCss).toContain(':root[data-app-booted] .tactical-page')
+    expect(chromeCss).toContain(':root[data-app-booted] .chat-page:not(.chat-surface-dock)')
+    const pageIn = chromeCss.slice(
+      chromeCss.indexOf('@keyframes bui-page-in'),
+      chromeCss.indexOf('@keyframes bui-page-in') + 220,
+    )
+    expect(pageIn).not.toContain('opacity')
+    expect(appSource).toContain('document.documentElement.dataset.appBooted')
+    // felinic menus/selects/dialogs ship animate-in classes that are dead
+    // utilities until the app imports tw-animate-css.
+    expect(appStylesSource).toContain('@import "tw-animate-css"')
+    expect(appPackageSource).toContain('"tw-animate-css"')
+    // Theme flip stays instant; only the footer icon settles on swap.
+    expect(contextSidebarSource).toContain(':key="themeMode"')
+    expect(contextSidebarSource).toContain('sidebar-theme-swap')
+    // Composer triggers telegraph their open state by rotating the glyph.
+    expect(codingComposerControlsSource).toContain(".composer-permission[data-state='open'] .composer-permission__chevron")
+    expect(chatComposerSource).toContain('composer-add-trigger')
   })
 
   it('uses one card column for settings, dossiers, and profile', () => {

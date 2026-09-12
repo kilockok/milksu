@@ -21,19 +21,21 @@
   --bui-dur-turn: 400ms;
 }
 
-.tactical-page,
-.profile-page,
-.settings-page {
+/* Page switches enter opaque: the old page unmounts instantly, so fading the
+ * new one from 0 would flash the backdrop. Rise only, and never on first
+ * paint (App.vue stamps data-app-booted after the first frame). */
+:root[data-app-booted] .tactical-page,
+:root[data-app-booted] .profile-page,
+:root[data-app-booted] .settings-page,
+:root[data-app-booted] .chat-page:not(.chat-surface-dock) {
   animation: bui-page-in var(--bui-dur-page) var(--bui-ease);
 }
 
 @keyframes bui-page-in {
   from {
-    opacity: 0;
     transform: translateY(8px);
   }
   to {
-    opacity: 1;
     transform: none;
   }
 }
@@ -41,8 +43,16 @@
 @media (prefers-reduced-motion: reduce) {
   .tactical-page,
   .profile-page,
-  .settings-page {
+  .settings-page,
+  .chat-page {
     animation: none;
+  }
+  /* reka overlay enter/exit runs to completion instantly so animationend
+   * still fires and Presence unmounts correctly. */
+  [data-slot$='-content'],
+  [data-slot$='-overlay'] {
+    animation-delay: 0ms !important;
+    animation-duration: 0.01ms !important;
   }
 }
 

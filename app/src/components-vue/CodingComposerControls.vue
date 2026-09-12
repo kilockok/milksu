@@ -362,6 +362,20 @@ function triggerModelText() {
   color: var(--warning);
 }
 
+.composer-permission__chevron {
+  transition: rotate var(--bui-dur-hover) ease;
+}
+
+.composer-permission[data-state='open'] .composer-permission__chevron {
+  rotate: 180deg;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .composer-permission__chevron {
+    transition: none;
+  }
+}
+
 .approval-option {
   display: flex;
   min-height: 4.5rem;

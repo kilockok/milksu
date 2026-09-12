@@ -789,7 +789,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', closeOnOutside
           :title="themeModeLabel"
           @click="$emit('toggleTheme')"
         >
-          <component :is="ThemeToggleIcon" class="size-4" />
+          <component :is="ThemeToggleIcon" :key="themeMode" class="size-4" />
         </button>
       </div>
     </div>
@@ -1110,6 +1110,20 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', closeOnOutside
   opacity: 0.55;
 }
 
+/* The theme flip itself stays instant (a whole-page transition would freeze
+ * hover); only the trigger icon settles. Gated on data-app-booted so the
+ * first paint never animates. */
+:root[data-app-booted] .agent-sidebar__theme svg {
+  animation: sidebar-theme-swap var(--bui-dur-reveal) var(--bui-ease);
+}
+
+@keyframes sidebar-theme-swap {
+  from {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.6);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .agent-sidebar,
   .agent-sidebar__copy,
@@ -1119,6 +1133,10 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', closeOnOutside
   .agent-sidebar__expand,
   .agent-sidebar-item__menu {
     transition: none;
+  }
+
+  .agent-sidebar__theme svg {
+    animation: none;
   }
 }
 </style>

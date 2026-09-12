@@ -331,6 +331,16 @@ function applyCurrentTheme() {
 
 applyCurrentTheme()
 
+// Gate page-switch and icon-swap animations until after the first paint so the
+// initial UI never animates (design language: first paint never animates).
+onMounted(() => {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      document.documentElement.dataset.appBooted = ''
+    })
+  })
+})
+
 const defaultTaskModel = computed(() => {
   if (!settings.value) return null
   return {

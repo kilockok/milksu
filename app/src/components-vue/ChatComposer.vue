@@ -1405,6 +1405,7 @@ defineExpose({
                     type="button"
                     variant="ghost"
                     size="icon"
+                    class="composer-add-trigger"
                     :disabled="running"
                     :aria-label="t('添加内容与工具', 'Add content and tools')"
                     :title="t('添加附件、工作方式或交互范围', 'Add attachments, a working mode, or an interaction scope')"
@@ -1918,6 +1919,20 @@ defineExpose({
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.composer-add-trigger svg {
+  transition: rotate var(--bui-dur-hover) ease;
+}
+
+.composer-add-trigger[data-state='open'] svg {
+  rotate: 45deg;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .composer-add-trigger svg {
+    transition: none;
+  }
 }
 
 .chat-composer__chip--goal {
