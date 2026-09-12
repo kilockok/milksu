@@ -12,6 +12,7 @@ import {
   SegmentedControl,
   SettingsRow,
   SettingsSection,
+  SwapTransition,
 } from '@felinic/ui'
 import {
   ArrowLeft,
@@ -185,6 +186,11 @@ const selectedPackId = ref('')
 const selectedPack = computed(() => (
   envPackages.value.find(item => item.id === selectedPackId.value) ?? null
 ))
+// iOS-style push-pop for the packages list <-> pack detail swap.
+const swapDirection = ref<'forward' | 'back'>('forward')
+watch(selectedPack, pack => {
+  swapDirection.value = pack ? 'forward' : 'back'
+})
 const boundPackage = computed(() => (
   envPackages.value.find(item => item.id === selected.value?.packageId) ?? null
 ))
@@ -526,7 +532,8 @@ function abortRename(event: KeyboardEvent) {
         </template>
       </WorkspaceModuleTopBar>
 
-      <section v-if="labTab === 'packages' && selectedPack" class="page-scroll flex-1 bg-background" :aria-label="t('靶机', 'Target')">
+      <SwapTransition :direction="swapDirection" class="bui-page-swap flex min-h-0 min-w-0 flex-1 flex-col">
+      <section v-if="labTab === 'packages' && selectedPack" key="lab-pack-detail" class="page-scroll flex-1 bg-background" :aria-label="t('靶机', 'Target')">
         <div class="page-column page-stack">
           <SettingsSection :title="t('简介', 'Overview')" data-testid="lab-pack-intro">
             <SettingsRow v-if="selectedPack.source" :label="t('来源', 'Source')" :description="selectedPack.source" />
@@ -565,7 +572,7 @@ function abortRename(event: KeyboardEvent) {
         </div>
       </section>
 
-      <section v-else-if="labTab === 'packages'" class="page-scroll flex-1 bg-background" :aria-label="t('题目包', 'Packages')">
+      <section v-else-if="labTab === 'packages'" key="lab-pack-list" class="page-scroll flex-1 bg-background" :aria-label="t('题目包', 'Packages')">
         <div class="page-column page-stack">
           <section
             v-for="group in packageGroups"
@@ -595,7 +602,7 @@ function abortRename(event: KeyboardEvent) {
         </div>
       </section>
 
-      <section v-else class="tactical-paper-surface min-h-0 flex-1 overflow-auto bg-card" :aria-label="t('自定义任务', 'Custom jobs')">
+      <section v-else key="lab-jobs" class="tactical-paper-surface min-h-0 flex-1 overflow-auto bg-card" :aria-label="t('自定义任务', 'Custom jobs')">
         <div v-if="!customJobs.length" class="flex min-h-full flex-col items-center justify-center gap-3 px-6 py-16 text-center">
           <p class="text-body text-muted-foreground">{{ t('还没有自定义任务。', 'No custom jobs.') }}</p>
           <Button size="sm" variant="brand" @click="labTab = 'packages'">{{ t('看题目包', 'Browse packages') }}</Button>
@@ -658,6 +665,7 @@ function abortRename(event: KeyboardEvent) {
           </article>
         </div>
       </section>
+      </SwapTransition>
       <footer class="flex h-14 shrink-0 items-center border-t border-border px-6">
         <span v-if="labTab === 'packages' && selectedPack" class="text-caption text-muted-foreground">
           {{ t('1 台靶机', '1 target') }}<span v-if="(selectedPack.challenges?.length || 0) > 1"> · {{ t(`${selectedPack.challenges?.length} 题`, `${selectedPack.challenges?.length} challenges`) }}</span>

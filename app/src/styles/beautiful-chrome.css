@@ -40,12 +40,36 @@
   }
 }
 
+/* Drill panes inside a SwapTransition host are driven by felinic's
+ * swap-forward / swap-back cross-slide (90ms in / 40ms out); the page-level
+ * rise must not double-play on them. */
+:root[data-app-booted] .bui-page-swap .tactical-page {
+  animation: none;
+}
+
+/* Select triggers telegraph the open state: the chevron flips 180 degrees.
+ * The native variant has no open state — focus-within covers the popup. */
+[data-slot='select-trigger'] > svg:last-child,
+[data-slot='native-select-icon'] {
+  transition: rotate var(--bui-dur-hover) ease, opacity var(--bui-dur-hover) ease;
+}
+
+[data-slot='select-trigger'][data-state='open'] > svg:last-child,
+[data-slot='native-select-wrapper']:focus-within [data-slot='native-select-icon'] {
+  rotate: 180deg;
+  opacity: 0.9;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .tactical-page,
   .profile-page,
   .settings-page,
   .chat-page {
     animation: none;
+  }
+  [data-slot='select-trigger'] > svg:last-child,
+  [data-slot='native-select-icon'] {
+    transition: none;
   }
   /* reka overlay enter/exit runs to completion instantly so animationend
    * still fires and Presence unmounts correctly. */

@@ -13,6 +13,7 @@ import {
   NativeSelectOption,
   SettingsRow,
   SettingsSection,
+  SwapTransition,
 } from '@felinic/ui'
 import {
   ArrowLeft,
@@ -239,6 +240,11 @@ const cveHistory = computed(() => {
 const selectedItem = computed(() => (
   dashboard.tracked.value.find(item => item.id === dashboard.selectedId.value) ?? null
 ))
+// iOS-style push-pop for the list <-> detail swap (felinic SwapTransition).
+const swapDirection = ref<'forward' | 'back'>('forward')
+watch(selectedItem, item => {
+  swapDirection.value = item ? 'forward' : 'back'
+})
 const targetOpen = ref(false)
 const pendingOpen = ref(false)
 const showStartEnv = ref(false)
@@ -556,7 +562,8 @@ function addSearchResult(candidate: VulnerabilitySearchCandidate) {
 </script>
 
 <template>
-  <main v-if="!selectedItem" class="tactical-page flex min-w-0 flex-1 flex-col overflow-hidden bg-background">
+  <SwapTransition :direction="swapDirection" class="bui-page-swap tactical-page flex min-h-0 min-w-0 flex-1 flex-col bg-background">
+  <main v-if="!selectedItem" key="cve-list" class="tactical-page flex min-w-0 flex-1 flex-col overflow-hidden bg-background">
     <WorkspaceModuleTopBar module="cve" :title="t('漏洞', 'CVE')">
       <template #actions>
         <WorkspaceCatalogActions
@@ -756,7 +763,7 @@ function addSearchResult(candidate: VulnerabilitySearchCandidate) {
     </footer>
   </main>
 
-  <main v-else class="tactical-page flex min-w-0 flex-1 flex-col overflow-hidden bg-background">
+  <main v-else key="cve-detail" class="tactical-page flex min-w-0 flex-1 flex-col overflow-hidden bg-background">
     <WorkspaceModuleTopBar module="cve" :title="selectedItem.id" :subtitle="selectedItem.title">
       <template #leading>
         <Button variant="ghost" size="icon-sm" :aria-label="t('返回漏洞列表', 'Back to CVE list')" @click="clearSelection">
@@ -865,6 +872,7 @@ function addSearchResult(candidate: VulnerabilitySearchCandidate) {
       </DialogContent>
     </Dialog>
   </main>
+  </SwapTransition>
   <Transition name="bui-dock-pop">
   <ConversationDock
     v-if="!chatMaximized && chatDockOpen"

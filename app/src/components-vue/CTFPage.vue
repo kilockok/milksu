@@ -18,6 +18,7 @@ import {
   SelectValue,
   SettingsRow,
   SettingsSection,
+  SwapTransition,
 } from '@felinic/ui'
 import {
   ArrowLeft,
@@ -217,6 +218,11 @@ const training = useNSSCTFTraining()
 const publicCatalog = useNSSCTFCatalog()
 const ctfshow = useCTFShowCatalog()
 const screen = ref<Screen>('challenge')
+// iOS-style push-pop for catalog <-> detail <-> workspace screen swaps.
+const swapDirection = ref<'forward' | 'back'>('forward')
+watch(screen, next => {
+  swapDirection.value = next === 'challenge' ? 'back' : 'forward'
+})
 const deactivatedFromWorkspace = ref(false)
 const ctfSection = computed(() => props.ctfSection)
 const workspaceScrollArea = ref<HTMLElement | null>(null)
@@ -1638,12 +1644,14 @@ onBeforeUnmount(() => {
       class="min-h-0 flex-1"
       :class="screen === 'challenge' ? 'overflow-hidden' : 'page-scroll'"
     >
-      <div
-        class="w-full"
+      <SwapTransition
+        :direction="swapDirection"
+        class="bui-page-swap w-full"
         :class="screen === 'challenge' ? 'h-full' : 'page-column'"
       >
         <section
           v-if="ctfSection === 'catalog' && screen === 'challenge' && (activeBank === 'hackthebox' || activeBank === 'tryhackme')"
+          key="ctf-bank-external"
           class="page-scroll h-full"
           :aria-labelledby="`${activeBank}-platform-title`"
         >
@@ -1689,6 +1697,7 @@ onBeforeUnmount(() => {
 
         <section
           v-else-if="ctfSection === 'catalog' && screen === 'detail'"
+          key="ctf-detail"
           class="page-stack"
           :aria-label="t('题目详情', 'Challenge details')"
         >
@@ -1762,6 +1771,7 @@ onBeforeUnmount(() => {
 
         <CTFChallengeDesk
           v-else-if="ctfSection === 'catalog' && screen === 'challenge'"
+          key="ctf-desk"
           :active-bank="activeCatalogBank"
           :nssctf-problems="publicCatalog.result.value?.problems ?? []"
           :ctfshow-problems="visibleCTFShowProblems"
@@ -1819,7 +1829,7 @@ onBeforeUnmount(() => {
         />
 
 
-        <section v-else-if="screen === 'workspace'" aria-labelledby="workspace-title">
+        <section v-else-if="screen === 'workspace'" key="ctf-workspace" aria-labelledby="workspace-title">
           <Alert
             v-if="backend.error.value || arena.error.value || webBridge.error.value"
             variant="destructive"
@@ -1995,7 +2005,7 @@ onBeforeUnmount(() => {
             </SettingsRow>
           </SettingsSection>
         </section>
-      </div>
+      </SwapTransition>
     </div>
     <Transition name="bui-dock-pop">
     <ConversationDock

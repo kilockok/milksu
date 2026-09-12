@@ -204,6 +204,24 @@ describe('Workspace visual contract', () => {
     expect(chatComposerSource).toContain('composer-add-trigger')
   })
 
+  it('drives list-to-detail drills through the felinic SwapTransition push-pop', () => {
+    const chromeCss = readFileSync(new URL('../styles/beautiful-chrome.css', import.meta.url), 'utf8')
+    expect(vulnPageSource).toContain('<SwapTransition :direction="swapDirection"')
+    expect(vulnPageSource).toContain('key="cve-list"')
+    expect(vulnPageSource).toContain('key="cve-detail"')
+    expect(labPageSource).toContain('<SwapTransition :direction="swapDirection"')
+    expect(labPageSource).toContain('key="lab-pack-list"')
+    expect(ctfPageSource).toContain('<SwapTransition')
+    expect(ctfPageSource).toContain('key="ctf-workspace"')
+    expect(ctfPageSource).toContain('key="ctf-desk"')
+    // Drill panes must not double-play the page-level rise.
+    expect(chromeCss).toContain(':root[data-app-booted] .bui-page-swap .tactical-page')
+    // Select triggers flip their chevron on open; the native variant uses
+    // focus-within because the OS popup exposes no open state.
+    expect(chromeCss).toContain("[data-slot='select-trigger'][data-state='open'] > svg:last-child")
+    expect(chromeCss).toContain("[data-slot='native-select-wrapper']:focus-within [data-slot='native-select-icon']")
+  })
+
   it('keeps the sidebar footer and catalog status bar on one shared bottom height', () => {
     // Both bars are 56px (h-14) bottom-flush blocks so their hairlines sit at
     // the same height across the sidebar seam.
