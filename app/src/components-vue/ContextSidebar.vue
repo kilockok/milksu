@@ -1012,10 +1012,10 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', closeOnOutside
 
 .agent-sidebar__foot {
   display: flex;
-  min-height: 2rem;
+  box-sizing: border-box;
+  height: 3.5rem;
   align-items: center;
-  margin: 0.75rem 0.5rem 0.25rem;
-  padding-top: 0.75rem;
+  margin: 0 0.5rem;
   border-top: 1px solid var(--border);
 }
 
@@ -1063,6 +1063,8 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', closeOnOutside
 .agent-sidebar[data-sidebar-collapsed='true'] .agent-sidebar__foot {
   align-self: flex-start;
   width: 52px;
+  height: auto;
+  min-height: 0;
   margin: 0.5rem 0 0.75rem;
   padding: 0;
   border-top: 0;

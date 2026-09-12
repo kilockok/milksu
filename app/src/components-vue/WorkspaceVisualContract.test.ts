@@ -204,6 +204,15 @@ describe('Workspace visual contract', () => {
     expect(chatComposerSource).toContain('composer-add-trigger')
   })
 
+  it('keeps the sidebar footer and catalog status bar on one shared bottom height', () => {
+    // Both bars are 56px (h-14) bottom-flush blocks so their hairlines sit at
+    // the same height across the sidebar seam.
+    expect(contextSidebarSource).toMatch(/\.agent-sidebar__foot \{[^}]*height: 3\.5rem/)
+    expect(ctfChallengeDeskSource).toContain('<footer class="flex h-14 shrink-0 items-center justify-between border-t border-border px-6">')
+    expect(vulnPageSource).toContain('<footer class="flex h-14 shrink-0 items-center justify-between border-t border-border px-6">')
+    expect(labPageSource).toContain('<footer class="flex h-14 shrink-0 items-center border-t border-border px-6">')
+  })
+
   it('uses one card column for settings, dossiers, and profile', () => {
     expect(appStylesSource).toContain('--page-stack-width: 64rem')
     expect(appStylesSource).toContain('.page-column {')
